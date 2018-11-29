@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 # Microsoft AutoUpdate Helper for Jamf Pro
-# Script Version 1.2
+# Script Version 1.4
 #
 ## Copyright (c) 2018 Microsoft Corp. All rights reserved.
 ## Scripts are not supported under any Microsoft standard support program or service. The scripts are provided AS IS without warranty of any kind.
@@ -11,7 +11,7 @@
 ## (including, without limitation, damages for loss of business profits, business interruption, loss of business information, or other pecuniary 
 ## loss) arising out of the use of or inability to use the sample scripts or documentation, even if Microsoft has been advised of the possibility
 ## of such damages.
-## Feedback: pbowden@microsoft.com
+## Feedback: pbowden@microsoft.com 
 
 # IT Admin constants for which applications to update [set to true or false as required]
 UPDATE_WORD="true"
@@ -180,8 +180,9 @@ function CheckAppInstall() {
 
 # Function to determine the logged-in state of the Mac
 function DetermineLoginState() {
-	CONSOLE=$(stat -f%Su /dev/console)
-	if [ "$CONSOLE" == "root" ]; then
+	# The following line is courtesy of @macmule - https://macmule.com/2014/11/19/how-to-get-the-currently-logged-in-user-in-a-more-apple-approved-way/
+	CONSOLE=$(/usr/bin/python -c 'from SystemConfiguration import SCDynamicStoreCopyConsoleUser; import sys; username = (SCDynamicStoreCopyConsoleUser(None, None, None) or [None])[0]; username = [username,""][username in [u"loginwindow", None, u""]]; sys.stdout.write(username + "\n");')
+	if [ "$CONSOLE" == "" ]; then
     	echo "No user logged in"
 		CMD_PREFIX=""
 	else
@@ -224,48 +225,64 @@ if [ "$UPDATE_WORD" == "true" ]; then
 	RegisterApp "$PATH_WORD" "MSWD15"
 	SetTargetVersion "$VERSION_WORD"
 	PerformUpdate "MSWD15" "$TARGET_VERSION"
+else
+	Debug "Update for Word disabled"
 fi
 if [ "$UPDATE_EXCEL" == "true" ]; then
 	Debug "Going for Excel update"
 	RegisterApp "$PATH_EXCEL" "XCEL15"
 	SetTargetVersion "$VERSION_EXCEL"
 	PerformUpdate "XCEL15" "$TARGET_VERSION"
+else
+	Debug "Update for Excel disabled"
 fi
 if [ "$UPDATE_POWERPOINT" == "true" ]; then
 	Debug "Going for PowerPoint update"
 	RegisterApp "$PATH_POWERPOINT" "PPT315"
 	SetTargetVersion "$VERSION_POWERPOINT"
 	PerformUpdate "PPT315" "$TARGET_VERSION"
+else
+	Debug "Update for PowerPoint disabled"
 fi
 if [ "$UPDATE_OUTLOOK" == "true" ]; then
 	Debug "Going for Outlook update"
 	RegisterApp "$PATH_OUTLOOK" "OPIM15"
 	SetTargetVersion "$VERSION_OUTLOOK"
 	PerformUpdate "OPIM15" "$TARGET_VERSION"
+else
+	Debug "Update for Outlook disabled"
 fi
 if [ "$UPDATE_ONENOTE" == "true" ]; then
 	Debug "Going for OneNote update"
 	RegisterApp "$PATH_ONENOTE" "ONMC15"
 	SetTargetVersion "$VERSION_ONENOTE"
 	PerformUpdate "ONMC15" "$TARGET_VERSION"
+else
+	Debug "Update for OneNote disabled"
 fi
 if [ "$UPDATE_SKYPEBUSINESS" == "true" ]; then
 	Debug "Going for SfB update"
 	RegisterApp "$PATH_SKYPEBUSINESS" "MSFB16"
 	SetTargetVersion "$VERSION_SKYPEBUSINESS"
 	PerformUpdate "MSFB16" "$TARGET_VERSION"
+else
+	Debug "Update for SfB disabled"
 fi
 if [ "$UPDATE_REMOTEDESKTOP" == "true" ]; then
 	Debug "Going for Remote Desktop update"
 	RegisterApp "$PATH_REMOTEDESKTOP" "MSRD10"
 	SetTargetVersion "$VERSION_REMOTEDESKTOP"
 	PerformUpdate "MSRD10" "$TARGET_VERSION"
+else
+	Debug "Update for Remote Desktop disabled"
 fi
 if [ "$UPDATE_COMPANYPORTAL" == "true" ]; then
 	Debug "Going for Company Portal update"
 	RegisterApp "$PATH_COMPANYPORTAL" "IMCP01"
 	SetTargetVersion "$VERSION_COMPANYPORTAL"
 	PerformUpdate "IMCP01" "$TARGET_VERSION"
+else
+	Debug "Update for Company Portal disabled"
 fi
 
 exit 0
